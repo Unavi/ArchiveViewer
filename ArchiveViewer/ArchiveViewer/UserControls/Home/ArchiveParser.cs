@@ -83,7 +83,7 @@ namespace ArchiveViewer.UserControls.Home
 
             subnamespaces.Add(new Subnamespace
             {
-                Namespace = grouping.Key.Split('.')[grouping.Key.Split('.').Length -1],
+                Namespace = grouping.Key.Split('.')[grouping.Key.Split('.').Length - 1],
                 Children = children.ToList()
             });
         }
@@ -107,10 +107,11 @@ namespace ArchiveViewer.UserControls.Home
                     });
                 }
 
-                var subnamespaces = parentSubnamespaces.Where(d => @namespace.Contains(d.Namespace));
+                var subnamespaces = parentSubnamespaces.Where(d => d.Namespace == namespaceParts[0]);
                 foreach (var subnamespace in subnamespaces)
                 {
-                    var fittingSubnameSpace = FindSubnamespaceForNamespace(@namespace.Replace(namespaceParts[0] + ".", ""),
+                    var fittingSubnameSpace = FindSubnamespaceForNamespace(
+                        @namespace.Replace(namespaceParts[0] + ".", ""),
                         subnamespace.Subnamespaces ?? (subnamespace.Subnamespaces = new List<Subnamespace>()));
                     if (fittingSubnameSpace != null)
                     {
@@ -118,6 +119,7 @@ namespace ArchiveViewer.UserControls.Home
                     }
                 }
             }
+
             throw new Exception("Could not find parent namespace. Something is wrong.");
         }
 
@@ -161,17 +163,29 @@ namespace ArchiveViewer.UserControls.Home
 
             for (int i = 0; i <= namespaceDepth + 1; i++)
             {
-                string tabs = "\t\t\t" + new String('\t', i * 2);
-                serializedArchive = serializedArchive.Replace("\n"+ tabs + "\"Source\": {", "\n" + tabs + "\"Source\":\r\n" + tabs + "{");
-                serializedArchive = serializedArchive.Replace("\n" + tabs + "\"Translation\": {", "\n" + tabs + "\"Translation\":\r\n" + tabs + "{");
+                string tabs = "\t\t\t" + new string('\t', i * 2);
+                serializedArchive = serializedArchive.Replace("\n" + tabs + "\"Source\": {",
+                    "\n" + tabs + "\"Source\":\r\n" + tabs + "{");
+                serializedArchive = serializedArchive.Replace("\n" + tabs + "\"Translation\": {",
+                    "\n" + tabs + "\"Translation\":\r\n" + tabs + "{");
                 serializedArchive = serializedArchive.Replace(",\r\n" + tabs + "\"Subnamespaces\": null", "");
                 serializedArchive = serializedArchive.Replace("\r\n" + tabs + "\"Children\": null,", "");
             }
 
             string path = project.Path + "\\" + language;
             path += "\\" + Path.GetFileName(project.Path) + ".archive";
-
+            File.Copy(path, path.Replace(".archive", ".bak"), true);
             File.WriteAllText(path, serializedArchive, Encoding.Unicode);
+        }
+
+        public void Revert(Project project, string language)
+        {
+            string path = project.Path + "\\" + language;
+            path += "\\" + Path.GetFileName(project.Path) + ".bak";
+            if (File.Exists(path.Replace(".bak", ".archive")))
+            {
+                File.Copy(path, path.Replace(".bak", ".archive"), true);
+            }
         }
     }
 }

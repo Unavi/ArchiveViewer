@@ -96,9 +96,18 @@
             </Grid>
             <StackPanel Grid.Row="1" Margin="5 0 0 15">
                 <Label Content="Save Changes back to archive:" />
-                <Button cal:Message.Attach="SaveChanges()">
-                    <materialDesign:PackIcon Kind="ContentSave" VerticalAlignment="Center" />
-                </Button>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Button cal:Message.Attach="SaveChanges()">
+                        <materialDesign:PackIcon Kind="ContentSave" VerticalAlignment="Center" />
+                    </Button>
+                    <Button Grid.Column="1" cal:Message.Attach="RevertSave()" Margin="5 0 0 0" materialDesign:HintAssist.Hint="Role back changes if there is a .bak file.">
+                        <materialDesign:PackIcon Kind="Undo" VerticalAlignment="Center" />
+                    </Button>
+                </Grid>
             </StackPanel>
             <StackPanel Grid.Row="2" Margin="5 0 0 15">
                 <Label Content="Available Languages:" />

@@ -167,6 +167,7 @@ namespace ArchiveViewer.UserControls.Home
                 if (_selectedProject == value) return;
                 _selectedProject = value;
                 NotifyOfPropertyChange();
+                NotifyOfPropertyChange(() => CanRevertSave);
                 NotifyOfPropertyChange(() => CanSaveSelectedProject);
                 NotifyOfPropertyChange(() => CanExportCsv);
                 NotifyOfPropertyChange(() => CanImportCsv);
@@ -233,6 +234,15 @@ namespace ArchiveViewer.UserControls.Home
             }
         }
 
+        public bool CanRevertSave => SelectedProject != null;
+
+        public void RevertSave()
+        {
+            var tempLanguage = SelectedLanguage;
+            _archiveParser.Revert(SelectedProject, SelectedLanguage);
+            SelectProject(SelectedProject.Name, SelectedProject.Path);
+            SelectedLanguage = tempLanguage;
+        }
         private void ArchiveItemsFilteredOnFilter(object sender, FilterEventArgs filterEventArgs)
         {
             filterEventArgs.Accepted = false;
