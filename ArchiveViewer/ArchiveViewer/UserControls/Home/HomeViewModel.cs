@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Data;
 using System.Windows.Forms;
 using ArchiveViewer.Models;
 using Caliburn.Micro;
+using Google.Apis.Auth.OAuth2;
+using Google.Cloud.Translation.V2;
 using Newtonsoft.Json;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 using Screen = Caliburn.Micro.Screen;
@@ -25,15 +28,19 @@ namespace ArchiveViewer.UserControls.Home
 
         private BindableCollection<Project> _projects;
 
+        private int _selectedArchiveItemCount;
+
+        private BindableCollection<ArchiveItem> _selectedArchiveItems;
+
         private string _selectedLanguage;
         private Project _selectedProject;
-
 
         public HomeViewModel()
         {
             Projects = new BindableCollection<Project>();
             Languages = new BindableCollection<string>();
             ArchiveItems = new BindableCollection<ArchiveItem>();
+            SelectedArchiveItems = new BindableCollection<ArchiveItem>();
 
             var folderPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\ArchiveViewer\\";
             _projectPath = folderPath + _projectPath;
@@ -57,6 +64,17 @@ namespace ArchiveViewer.UserControls.Home
                 Source = ArchiveItems
             };
             _archiveItemsFiltered.Filter += ArchiveItemsFilteredOnFilter;
+        }
+
+        public BindableCollection<ArchiveItem> SelectedArchiveItems
+        {
+            get => _selectedArchiveItems;
+            set
+            {
+                if (_selectedArchiveItems == value) return;
+                _selectedArchiveItems = value;
+                NotifyOfPropertyChange();
+            }
         }
 
         public string Filter
@@ -162,6 +180,59 @@ namespace ArchiveViewer.UserControls.Home
         public bool CanImportCsv => SelectedProject != null;
         public bool CanExportCsv => SelectedProject != null;
 
+        public int SelectedArchiveItemCount
+        {
+            get => _selectedArchiveItemCount;
+            set
+            {
+                if (_selectedArchiveItemCount == value) return;
+                _selectedArchiveItemCount = value;
+                NotifyOfPropertyChange();
+            }
+        }
+
+        public void SelectedArchiveItemsChanged()
+        {
+            SelectedArchiveItemCount = SelectedArchiveItems.Count;
+        }
+
+        public void AutoTranslateSelected()
+        {
+            string token = File.ReadAllText("ArchiveViewer.json");
+            GoogleCredential googleCredential = GoogleCredential.FromJson(token);
+            TranslationClient translationClient = TranslationClient.Create(googleCredential);
+
+            string[] toTranslate = SelectedArchiveItems.Select(d => d.Native).ToArray();
+
+            if (toTranslate.Length == 0)
+            {
+                MessageBox.Show("Nothing selected", "Error", MessageBoxButtons.OK);
+                return;
+            }
+
+            if (toTranslate.Length > 125)
+            {
+                MessageBox.Show("Can't translate more than 125 entries with one call.", "Error", MessageBoxButtons.OK);
+                return;
+            }
+
+            try
+            {
+                IList<TranslationResult> results = translationClient.TranslateText(
+                    toTranslate,
+                    SelectedLanguage);
+                for (var i = 0; i < results.Count; i++)
+                {
+                    TranslationResult result = results[i];
+                    SelectedArchiveItems[i].Translated = result.TranslatedText;
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message, "Error", MessageBoxButtons.OK);
+            }
+        }
+
         private void ArchiveItemsFilteredOnFilter(object sender, FilterEventArgs filterEventArgs)
         {
             filterEventArgs.Accepted = false;
@@ -170,6 +241,7 @@ namespace ArchiveViewer.UserControls.Home
                 filterEventArgs.Accepted = true;
                 return;
             }
+
             if (filterEventArgs.Item is ArchiveItem archiveItem)
             {
                 if (archiveItem.Namespace.Contains(Filter))
@@ -177,23 +249,24 @@ namespace ArchiveViewer.UserControls.Home
                     filterEventArgs.Accepted = true;
                     return;
                 }
+
                 if (archiveItem.Key.Contains(Filter))
                 {
                     filterEventArgs.Accepted = true;
                     return;
                 }
+
                 if (archiveItem.Native.Contains(Filter))
                 {
                     filterEventArgs.Accepted = true;
                     return;
                 }
+
                 if (archiveItem.Translated.Contains(Filter))
                 {
                     filterEventArgs.Accepted = true;
-                    return;
                 }
             }
-
         }
 
         public void SaveChanges()

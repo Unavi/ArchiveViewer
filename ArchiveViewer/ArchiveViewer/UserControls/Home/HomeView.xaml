@@ -105,6 +105,8 @@
                 <ListBox ItemsSource="{Binding Languages}" SelectedItem="{Binding SelectedLanguage}" />
             </StackPanel>
             <StackPanel Grid.Row="3" Margin="5 0 0 5">
+                <Label Content="{Binding SelectedArchiveItemCount}"></Label>
+                <Button Margin="0 0 0 5" Content="Translate Selected" cal:Message.Attach="AutoTranslateSelected()"></Button>
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition />
@@ -128,7 +130,9 @@
             <TextBox Name="TextBox" Text="{Binding Filter}" wpf:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text" materialDesign:HintAssist.Hint="Filter (On Enter)"></TextBox>
 
             <DataGrid Grid.Row="1" VerticalScrollBarVisibility="Visible" ItemsSource="{Binding ArchiveItemsFiltered.View}"
-                      Margin="-4,-4,0,0" AutoGenerateColumns="False">
+                      Margin="-4, 0,0,0" AutoGenerateColumns="False"
+                      wpf:DataGridMultiSelectBinding.SelectedItems="{Binding SelectedArchiveItems}"
+                      cal:Message.Attach="[Event SelectionChanged] = [Action SelectedArchiveItemsChanged()]">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Namespace" Binding="{Binding Namespace}" />
                     <DataGridTextColumn Header="Key" Binding="{Binding Key}" />

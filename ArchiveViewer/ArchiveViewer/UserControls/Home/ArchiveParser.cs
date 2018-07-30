@@ -34,6 +34,7 @@ namespace ArchiveViewer.UserControls.Home
             }
 
             ReadSubnamespaces(tree.Subnamespaces, archiveItems, "");
+            archiveItems = archiveItems.OrderBy(d => d.Namespace).ThenBy(d => d.Key).ToList();
 
             return archiveItems;
         }
