@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Windows.Data;
 using System.Windows.Forms;
+using ArchiveViewer.Interfaces;
+using ArchiveViewer.Library.Translation;
 using ArchiveViewer.Models;
 using Caliburn.Micro;
 using Google.Apis.Auth.OAuth2;
@@ -34,6 +36,7 @@ namespace ArchiveViewer.UserControls.Home
 
         private string _selectedLanguage;
         private Project _selectedProject;
+        private ITranslator _translator;
 
         public HomeViewModel()
         {
@@ -64,6 +67,8 @@ namespace ArchiveViewer.UserControls.Home
                 Source = ArchiveItems
             };
             _archiveItemsFiltered.Filter += ArchiveItemsFilteredOnFilter;
+            _translator = new GoogleTranslator();
+            _translator.Init();
         }
 
         public BindableCollection<ArchiveItem> SelectedArchiveItems
@@ -199,10 +204,6 @@ namespace ArchiveViewer.UserControls.Home
 
         public void AutoTranslateSelected()
         {
-            string token = File.ReadAllText("ArchiveViewer.json");
-            GoogleCredential googleCredential = GoogleCredential.FromJson(token);
-            TranslationClient translationClient = TranslationClient.Create(googleCredential);
-
             string[] toTranslate = SelectedArchiveItems.Select(d => d.Native).ToArray();
 
             if (toTranslate.Length == 0)
@@ -211,7 +212,7 @@ namespace ArchiveViewer.UserControls.Home
                 return;
             }
 
-            if (toTranslate.Length > 125)
+            if (toTranslate.Length > _translator.MaxTranslations())
             {
                 MessageBox.Show("Can't translate more than 125 entries with one call.", "Error", MessageBoxButtons.OK);
                 return;
@@ -219,13 +220,42 @@ namespace ArchiveViewer.UserControls.Home
 
             try
             {
-                IList<TranslationResult> results = translationClient.TranslateText(
-                    toTranslate,
-                    SelectedLanguage);
-                for (var i = 0; i < results.Count; i++)
+                IList<string> translatedLines = _translator.Translate(toTranslate, SelectedLanguage);
+                for (var i = 0; i < translatedLines.Count; i++)
                 {
-                    TranslationResult result = results[i];
-                    SelectedArchiveItems[i].Translated = result.TranslatedText;
+                    string result = translatedLines[i];
+                    SelectedArchiveItems[i].Translated = result;
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message, "Error", MessageBoxButtons.OK);
+            }
+        }
+
+        public void ReverseTranslateSelected()
+        {
+            string[] toTranslate = SelectedArchiveItems.Select(d => d.Translated).ToArray();
+
+            if (toTranslate.Length == 0)
+            {
+                MessageBox.Show("Nothing selected", "Error", MessageBoxButtons.OK);
+                return;
+            }
+
+            if (toTranslate.Length > _translator.MaxTranslations())
+            {
+                MessageBox.Show("Can't translate more than 125 entries with one call.", "Error", MessageBoxButtons.OK);
+                return;
+            }
+
+            try
+            {
+                IList<string> translatedLines = _translator.Translate(toTranslate, "en");
+                for (var i = 0; i < translatedLines.Count; i++)
+                {
+                    string result = translatedLines[i];
+                    SelectedArchiveItems[i].ReverseTranslated = result;
                 }
             }
             catch (Exception e)

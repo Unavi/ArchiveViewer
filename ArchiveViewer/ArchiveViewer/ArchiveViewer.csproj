@@ -60,6 +60,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="ArchiveBootstrapper.cs" />
+    <Compile Include="Interfaces\ITranslator.cs" />
+    <Compile Include="Library\Singleton.cs" />
+    <Compile Include="Library\Translation\GoogleTranslator.cs" />
     <Compile Include="Library\WPF\DataGridMultiSelectBinding.cs" />
     <Compile Include="Library\WPF\InputBindingsManager.cs" />
     <Compile Include="Models\ArchiveItem.cs" />

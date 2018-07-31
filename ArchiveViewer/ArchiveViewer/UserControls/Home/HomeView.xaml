@@ -115,13 +115,14 @@
             </StackPanel>
             <StackPanel Grid.Row="3" Margin="5 0 0 5">
                 <Label Content="{Binding SelectedArchiveItemCount}"></Label>
-                <Button Margin="0 0 0 5" Content="Translate Selected" cal:Message.Attach="AutoTranslateSelected()"></Button>
+                <Button Margin="0 0 0 5" Content="Translate selected" cal:Message.Attach="AutoTranslateSelected()"></Button>
+                <Button Margin="0 0 0 5" Content="Reverse translate selected" cal:Message.Attach="ReverseTranslateSelected()"></Button>
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition />
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
-                    <Button Margin="0 0 3 0" cal:Message.Attach="ImportCsv">
+                    <Button Grid.Column="0" Margin="0 0 3 0" cal:Message.Attach="ImportCsv">
                         <materialDesign:PackIcon Kind="Import" VerticalAlignment="Top" HorizontalAlignment="Left" />
                     </Button>
                     <Button Grid.Column="1" Margin="3 0 0 0" cal:Message.Attach="ExportCsv">
@@ -147,6 +148,7 @@
                     <DataGridTextColumn Header="Key" Binding="{Binding Key}" />
                     <DataGridTextColumn Header="Native" Binding="{Binding Native}" />
                     <DataGridTextColumn Header="Translated" Binding="{Binding Translated}" />
+                    <DataGridTextColumn Header="Reverse Translated" Binding="{Binding ReverseTranslated}" />
                 </DataGrid.Columns>
             </DataGrid>
         </Grid>
