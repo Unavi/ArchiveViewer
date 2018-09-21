@@ -6,5 +6,6 @@
         string Translate(string text, string culture);
         string[] Translate(string[] texts, string culture);
         void Init();
+        bool IsInitialized();
     }
 }

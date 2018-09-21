@@ -9,12 +9,23 @@ namespace ArchiveViewer.Library.Translation
     public class GoogleTranslator : Singleton<GoogleTranslator>, ITranslator
     {
         private TranslationClient _translationClient;
+        private string googleKey = "GoogleKey.json";
+        private bool _isInitialized;
 
         public void Init()
         {
-            string token = File.ReadAllText("ArchiveViewer.json");
-            GoogleCredential googleCredential = GoogleCredential.FromJson(token);
-            _translationClient = TranslationClient.Create(googleCredential);
+            if (File.Exists(googleKey))
+            {
+                string token = File.ReadAllText(googleKey);
+                GoogleCredential googleCredential = GoogleCredential.FromJson(token);
+                _translationClient = TranslationClient.Create(googleCredential);
+                _isInitialized = true;
+            }
+        }
+
+        public bool IsInitialized()
+        {
+            return _isInitialized;
         }
 
         public int MaxTranslations()

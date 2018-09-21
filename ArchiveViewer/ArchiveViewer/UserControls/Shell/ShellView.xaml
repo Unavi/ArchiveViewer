@@ -17,9 +17,18 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Separator Grid.Row="0" Margin="0"/>
+        <ContentControl Grid.Row="1" cal:View.Model="{Binding ActiveItem}" />
+    </Grid>
+    <!--<Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition />
         </Grid.RowDefinitions>
+
         <Grid Margin="5" Grid.Row="0">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                 <Button cal:Message.Attach="ShowHome()" materialDesign:RippleAssist.IsDisabled="True"
@@ -35,9 +44,8 @@
             </StackPanel>
         </Grid>
         <Separator Grid.Row="1" Margin="0" />
-
         <Grid Grid.Row="2">
             <ContentControl cal:View.Model="{Binding ActiveItem}" />
         </Grid>
-    </Grid>
+    </Grid>-->
 </Window>

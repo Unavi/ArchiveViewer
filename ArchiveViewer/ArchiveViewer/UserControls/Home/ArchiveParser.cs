@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Windows;
+using System.Windows.Forms;
 using ArchiveViewer.Models;
 using ArchiveViewer.Models.Archive;
 using Newtonsoft.Json;
@@ -182,6 +182,11 @@ namespace ArchiveViewer.UserControls.Home
         {
             string path = project.Path + "\\" + language;
             path += "\\" + Path.GetFileName(project.Path) + ".bak";
+            if (!File.Exists(path))
+            {
+                MessageBox.Show("There is nothing to revert. You need to save changes to undo them.", "Error", MessageBoxButtons.OK);
+                return;
+            }
             if (File.Exists(path.Replace(".bak", ".archive")))
             {
                 File.Copy(path, path.Replace(".bak", ".archive"), true);

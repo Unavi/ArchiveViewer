@@ -194,6 +194,8 @@ namespace ArchiveViewer.UserControls.Home
                 if (_selectedArchiveItemCount == value) return;
                 _selectedArchiveItemCount = value;
                 NotifyOfPropertyChange();
+                NotifyOfPropertyChange(() => CanAutoTranslateSelected);
+                NotifyOfPropertyChange(() => CanReverseTranslateSelected);
             }
         }
 
@@ -202,9 +204,18 @@ namespace ArchiveViewer.UserControls.Home
             SelectedArchiveItemCount = SelectedArchiveItems.Count;
         }
 
+        public bool CanAutoTranslateSelected => _translator.IsInitialized() && SelectedArchiveItemCount != 0;
+        public bool CanReverseTranslateSelected => _translator.IsInitialized() && SelectedArchiveItemCount != 0;
+
         public void AutoTranslateSelected()
         {
             string[] toTranslate = SelectedArchiveItems.Select(d => d.Native).ToArray();
+
+            if (!_translator.IsInitialized())
+            {
+                MessageBox.Show("Translator is not initialized.", "Error", MessageBoxButtons.OK);
+                return;
+            }
 
             if (toTranslate.Length == 0)
             {
@@ -236,6 +247,12 @@ namespace ArchiveViewer.UserControls.Home
         public void ReverseTranslateSelected()
         {
             string[] toTranslate = SelectedArchiveItems.Select(d => d.Translated).ToArray();
+
+            if (!_translator.IsInitialized())
+            {
+                MessageBox.Show("Translator is not initialized.", "Error", MessageBoxButtons.OK);
+                return;
+            }
 
             if (toTranslate.Length == 0)
             {

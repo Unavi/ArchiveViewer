@@ -42,7 +42,6 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Net.Http" />
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
@@ -66,6 +65,7 @@
     <Compile Include="Library\WPF\DataGridMultiSelectBinding.cs" />
     <Compile Include="Library\WPF\InputBindingsManager.cs" />
     <Compile Include="Models\ArchiveItem.cs" />
+    <Compile Include="Models\ArchiveItemMap.cs" />
     <Compile Include="Models\Archive\Archive.cs" />
     <Compile Include="Models\Archive\Child.cs" />
     <Compile Include="Models\Archive\Source.cs" />
@@ -119,7 +119,7 @@
       <Version>3.2.0</Version>
     </PackageReference>
     <PackageReference Include="CsvHelper">
-      <Version>7.1.1</Version>
+      <Version>2.16.3</Version>
     </PackageReference>
     <PackageReference Include="Google.Cloud.Translation.V2">
       <Version>1.0.0</Version>

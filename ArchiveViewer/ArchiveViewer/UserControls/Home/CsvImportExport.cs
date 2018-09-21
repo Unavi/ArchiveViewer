@@ -24,11 +24,9 @@ namespace ArchiveViewer.UserControls.Home
             {
                 var csv = new CsvReader(reader);
                 csv.Configuration.HasHeaderRecord = true;
-                csv.Configuration.HeaderValidated = null;
-                csv.Configuration.MissingFieldFound = null;
+                csv.Configuration.RegisterClassMap<ArchiveItemMap>();
 
                 archiveItems.Clear();
-                csv.Read();
                 csv.ReadHeader();
                 while (csv.Read())
                 {
@@ -55,6 +53,7 @@ namespace ArchiveViewer.UserControls.Home
             using (TextWriter writer = new StreamWriter(dlg.FileName))
             {
                 var csv = new CsvWriter(writer);
+                csv.Configuration.RegisterClassMap<ArchiveItemMap>();
                 csv.WriteRecords(archiveItems);
             }
         }
