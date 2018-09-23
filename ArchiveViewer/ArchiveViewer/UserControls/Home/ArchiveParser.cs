@@ -125,6 +125,10 @@ namespace ArchiveViewer.UserControls.Home
 
         public void SaveArchive(Project project, string language, IEnumerable<ArchiveItem> archiveItems)
         {
+            foreach (var archiveItem in archiveItems)
+            {
+                archiveItem.Persist();
+            }
             var archive = new Archive();
             archive.FormatVersion = 2;
             int namespaceDepth = 0;
@@ -174,23 +178,17 @@ namespace ArchiveViewer.UserControls.Home
 
             string path = project.Path + "\\" + language;
             path += "\\" + Path.GetFileName(project.Path) + ".archive";
-            File.Copy(path, path.Replace(".archive", ".bak"), true);
             File.WriteAllText(path, serializedArchive, Encoding.Unicode);
         }
 
-        public void Revert(Project project, string language)
+        public void Revert(Project project, string language, IEnumerable<ArchiveItem> archiveItems)
         {
-            string path = project.Path + "\\" + language;
-            path += "\\" + Path.GetFileName(project.Path) + ".bak";
-            if (!File.Exists(path))
+            foreach (var archiveItem in archiveItems)
             {
-                MessageBox.Show("There is nothing to revert. You need to save changes to undo them.", "Error", MessageBoxButtons.OK);
-                return;
+                archiveItem.Reset();
             }
-            if (File.Exists(path.Replace(".bak", ".archive")))
-            {
-                File.Copy(path, path.Replace(".bak", ".archive"), true);
-            }
+
+            SaveArchive(project, language, archiveItems);
         }
     }
 }

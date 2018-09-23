@@ -8,8 +8,6 @@ using ArchiveViewer.Interfaces;
 using ArchiveViewer.Library.Translation;
 using ArchiveViewer.Models;
 using Caliburn.Micro;
-using Google.Apis.Auth.OAuth2;
-using Google.Cloud.Translation.V2;
 using Newtonsoft.Json;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 using Screen = Caliburn.Micro.Screen;
@@ -25,6 +23,8 @@ namespace ArchiveViewer.UserControls.Home
         private CollectionViewSource _archiveItemsFiltered;
 
         private string _filter;
+
+        private bool _hasUnsavedChanges;
         private BindableCollection<string> _languages;
         private string _projectPath = "projects.json";
 
@@ -154,6 +154,10 @@ namespace ArchiveViewer.UserControls.Home
                     try
                     {
                         ArchiveItems.AddRange(_archiveParser.ParseArchive(SelectedProject, SelectedLanguage));
+                        foreach (ArchiveItem archiveItem in ArchiveItems)
+                        {
+                            archiveItem.TranslatedChanged += ArchiveItemOnTranslatedChanged;
+                        }
                     }
                     catch (InvalidArchiveFolderException)
                     {
@@ -179,7 +183,8 @@ namespace ArchiveViewer.UserControls.Home
             }
         }
 
-        public bool CanSaveChanges => SelectedProject != null && !string.IsNullOrEmpty(SelectedLanguage);
+        public bool CanSaveChanges =>
+            SelectedProject != null && !string.IsNullOrEmpty(SelectedLanguage) && _hasUnsavedChanges;
 
         public bool CanSaveSelectedProject => SelectedProject != null && SelectedProject.Name != "";
 
@@ -199,13 +204,26 @@ namespace ArchiveViewer.UserControls.Home
             }
         }
 
+        public bool CanAutoTranslateSelected => _translator.IsInitialized() && SelectedArchiveItemCount != 0;
+        public bool CanReverseTranslateSelected => _translator.IsInitialized() && SelectedArchiveItemCount != 0;
+
+        public bool CanRevertSave => SelectedProject != null && _hasUnsavedChanges;
+
+        private void ArchiveItemOnTranslatedChanged(object sender, bool hasChanges)
+        {
+            _hasUnsavedChanges = true;
+            if (!hasChanges && !ArchiveItems.Any(d => d.HasChanges))
+            {
+                _hasUnsavedChanges = false;
+            }
+            NotifyOfPropertyChange(() => CanSaveChanges);
+            NotifyOfPropertyChange(() => CanRevertSave);
+        }
+
         public void SelectedArchiveItemsChanged()
         {
             SelectedArchiveItemCount = SelectedArchiveItems.Count;
         }
-
-        public bool CanAutoTranslateSelected => _translator.IsInitialized() && SelectedArchiveItemCount != 0;
-        public bool CanReverseTranslateSelected => _translator.IsInitialized() && SelectedArchiveItemCount != 0;
 
         public void AutoTranslateSelected()
         {
@@ -281,15 +299,17 @@ namespace ArchiveViewer.UserControls.Home
             }
         }
 
-        public bool CanRevertSave => SelectedProject != null;
-
         public void RevertSave()
         {
+            _hasUnsavedChanges = false;
+            NotifyOfPropertyChange(() => CanSaveChanges);
+            NotifyOfPropertyChange(() => CanRevertSave);
             var tempLanguage = SelectedLanguage;
-            _archiveParser.Revert(SelectedProject, SelectedLanguage);
+            _archiveParser.Revert(SelectedProject, SelectedLanguage, ArchiveItems);
             SelectProject(SelectedProject.Name, SelectedProject.Path);
             SelectedLanguage = tempLanguage;
         }
+
         private void ArchiveItemsFilteredOnFilter(object sender, FilterEventArgs filterEventArgs)
         {
             filterEventArgs.Accepted = false;
@@ -301,25 +321,25 @@ namespace ArchiveViewer.UserControls.Home
 
             if (filterEventArgs.Item is ArchiveItem archiveItem)
             {
-                if (archiveItem.Namespace.Contains(Filter))
+                if (archiveItem.Namespace.ToLower().Contains(Filter.ToLower()))
                 {
                     filterEventArgs.Accepted = true;
                     return;
                 }
 
-                if (archiveItem.Key.Contains(Filter))
+                if (archiveItem.Key.ToLower().Contains(Filter.ToLower()))
                 {
                     filterEventArgs.Accepted = true;
                     return;
                 }
 
-                if (archiveItem.Native.Contains(Filter))
+                if (archiveItem.NativeWithChangeMarker.ToLower().Contains(Filter.ToLower()))
                 {
                     filterEventArgs.Accepted = true;
                     return;
                 }
 
-                if (archiveItem.Translated.Contains(Filter))
+                if (archiveItem.Translated.ToLower().Contains(Filter.ToLower()))
                 {
                     filterEventArgs.Accepted = true;
                 }
@@ -328,6 +348,9 @@ namespace ArchiveViewer.UserControls.Home
 
         public void SaveChanges()
         {
+            _hasUnsavedChanges = false;
+            NotifyOfPropertyChange(() => CanSaveChanges);
+            NotifyOfPropertyChange(() => CanRevertSave);
             _archiveParser.SaveArchive(SelectedProject, SelectedLanguage, ArchiveItems);
         }
 

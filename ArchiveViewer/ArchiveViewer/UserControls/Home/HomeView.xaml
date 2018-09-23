@@ -9,7 +9,7 @@
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:wpf="clr-namespace:ArchiveViewer.Library.WPF"
              mc:Ignorable="d"
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="800" d:DesignWidth="1000">
     <d:UserControl.DataContext>
         <home:HomeViewModel />
     </d:UserControl.DataContext>
@@ -24,8 +24,8 @@
             <RowDefinition Height="9px" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <Button Margin="5 5 0 0" Width="250" Grid.Row="0" Grid.Column="0" Content="Select Game.manifest"
-                cal:Message.Attach="SelectFolder()" />
+        <Button Grid.Row="0" Grid.Column="0" Content="Select Game.manifest"
+                cal:Message.Attach="SelectFolder()" Margin="5 5 0 0"  />
         <ItemsControl Grid.Row="0" Grid.Column="2" ItemsSource="{Binding Projects}" Margin="0 7 0 0">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -144,9 +144,9 @@
                       wpf:DataGridMultiSelectBinding.SelectedItems="{Binding SelectedArchiveItems}"
                       cal:Message.Attach="[Event SelectionChanged] = [Action SelectedArchiveItemsChanged()]">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Namespace" Binding="{Binding Namespace}" />
-                    <DataGridTextColumn Header="Key" Binding="{Binding Key}" />
-                    <DataGridTextColumn Header="Native" Binding="{Binding Native}" />
+                    <DataGridTextColumn IsReadOnly="True" Header="Namespace" Binding="{Binding Namespace}" />
+                    <DataGridTextColumn IsReadOnly="True" Header="Key" Binding="{Binding Key}" />
+                    <DataGridTextColumn IsReadOnly="True" Header="Native" Binding="{Binding NativeWithChangeMarker}" />
                     <DataGridTextColumn Header="Translated" Binding="{Binding Translated}" />
                     <DataGridTextColumn Header="Reverse Translated" Binding="{Binding ReverseTranslated}" />
                 </DataGrid.Columns>
