@@ -1,20 +1,20 @@
 # Archive Viewer
 
-Archive Viewer is a program to view and edit .archive files, which Unreal Engine 4 uses to save its' localization data.
+Archive Viewer is a program to view and edit .archive files, which Unreal Engine 4 uses to save its localization data.
 
 
 ![archive viewer interface][archive_viewer_1]
 
 [archive_viewer_1]: https://github.com/Unavi/ArchiveViewer/blob/master/Images/ArchiveViewer_1.png
 
-##### Why this program exists?
-I am not really a fan of ex- and importing the translation content of UE4 into .po files, especially since they don't contain the namespaces set in UE4. To make it more convenient I wrote a program to directly view and edit the .archive files.
+##### Why I wrote this program:
+Because I am not a fan of ex- and importing the translation content of UE4 into .po files, especially since they don't contain the namespaces set in UE4. To make it more convenient I wrote a program to directly view and edit the .archive files.
 
 #### Steps to get started
 
 * Select the Game.manifest Unreal generates for you and bookmark it for later under a name of your choosing.
 
-* Select the language you want to translate and enter the translated text into the Translated column. After you are done press the Save Changes back to archive button.
+* Select the language you want to translate and enter the translated text into the Translated column. After you are done press the __Save Changes back to archive__ button.
 
 * Aside from editing the translations in the Archive Viewer you can export and import them with the two lower left buttons. Translation data is exported in UTF-8.
 
