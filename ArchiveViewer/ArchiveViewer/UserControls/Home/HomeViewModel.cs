@@ -143,10 +143,25 @@ namespace ArchiveViewer.UserControls.Home
             get => _selectedLanguage;
             set
             {
+                if (_hasUnsavedChanges)
+                {
+                    var result = MessageBox.Show("There are unsaved changes. If you continue those changes are discarded.", "Error", MessageBoxButtons.OKCancel);
+                    if (result == DialogResult.OK)
+                    {
+                        _hasUnsavedChanges = false;
+                    }
+                    if (result == DialogResult.Cancel)
+                    {
+                        return;
+                    }
+                }
+
+
                 if (_selectedLanguage == value) return;
                 _selectedLanguage = value;
                 NotifyOfPropertyChange();
                 NotifyOfPropertyChange(() => CanSaveChanges);
+                NotifyOfPropertyChange(() => CanRevertSave);
                 ArchiveItems.Clear();
 
                 if (SelectedLanguage != null)
@@ -208,6 +223,8 @@ namespace ArchiveViewer.UserControls.Home
         public bool CanReverseTranslateSelected => _translator.IsInitialized() && SelectedArchiveItemCount != 0;
 
         public bool CanRevertSave => SelectedProject != null && _hasUnsavedChanges;
+
+        public bool HasUnsavedChanges => _hasUnsavedChanges;
 
         private void ArchiveItemOnTranslatedChanged(object sender, bool hasChanges)
         {
@@ -398,6 +415,18 @@ namespace ArchiveViewer.UserControls.Home
 
         public void SelectProject(string projectName, string projectPath)
         {
+            if (_hasUnsavedChanges)
+            {
+                var result = MessageBox.Show("There are unsaved changes. If you continue those changes are discarded.", "Error", MessageBoxButtons.OKCancel);
+                if (result == DialogResult.OK)
+                {
+                    _hasUnsavedChanges = false;
+                }
+                if (result == DialogResult.Cancel)
+                {
+                    return;
+                }
+            }
             var project = Projects.First(d => d.Name == projectName && d.Path == projectPath);
             SelectedProject = project;
             LoadProject();

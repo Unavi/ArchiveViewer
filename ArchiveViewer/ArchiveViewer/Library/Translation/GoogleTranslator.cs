@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using ArchiveViewer.Interfaces;
 using Google.Apis.Auth.OAuth2;
@@ -41,6 +42,13 @@ namespace ArchiveViewer.Library.Translation
 
         public string[] Translate(string[] texts, string culture)
         {
+            foreach (string text in texts)
+            {
+                if (text == "")
+                {
+                    throw new ArgumentException("Can't translate empty texts.");
+                }
+            }
             List<string> translations = new List<string>();
             var result = _translationClient.TranslateText(texts, culture);
             foreach (var translationResult in result)

@@ -13,7 +13,8 @@
         Background="{DynamicResource MaterialDesignPaper}"
         FontFamily="{DynamicResource MaterialDesignFont}"
         mc:Ignorable="d"
-        Title="ArchiveViewer" Height="800" Width="1600">
+        Title="ArchiveViewer" Height="800" Width="1600"
+        cal:Message.Attach="[Event Closing] = [Action Closing($eventArgs)]">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -22,6 +23,7 @@
         <Separator Grid.Row="0" Margin="0"/>
         <ContentControl Grid.Row="1" cal:View.Model="{Binding ActiveItem}" />
     </Grid>
+</Window>
     <!--<Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -48,4 +50,3 @@
             <ContentControl cal:View.Model="{Binding ActiveItem}" />
         </Grid>
     </Grid>-->
-</Window>

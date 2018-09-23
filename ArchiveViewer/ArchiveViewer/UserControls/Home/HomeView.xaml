@@ -104,14 +104,14 @@
                     <Button cal:Message.Attach="SaveChanges()" ToolTip="Save changes">
                         <materialDesign:PackIcon Kind="ContentSave" VerticalAlignment="Center" />
                     </Button>
-                    <Button Grid.Column="1" cal:Message.Attach="RevertSave()" Margin="5 0 0 0" materialDesign:HintAssist.Hint="Role back changes if there is a .bak file.">
+                    <Button Grid.Column="1" cal:Message.Attach="RevertSave()" Margin="5 0 0 0" ToolTip="Undo changes">
                         <materialDesign:PackIcon Kind="Undo" VerticalAlignment="Center" />
                     </Button>
                 </Grid>
             </StackPanel>
             <StackPanel Grid.Row="2" Margin="5 0 0 15">
                 <Label Content="Available Languages:" />
-                <ListBox ItemsSource="{Binding Languages}" SelectedItem="{Binding SelectedLanguage}" />
+                <ListBox x:Name="Languages" ItemsSource="{Binding Languages}" SelectedItem="{Binding SelectedLanguage}" SelectionChanged="Languages_SelectionChanged" />
             </StackPanel>
             <StackPanel Grid.Row="3" Margin="5 0 0 5">
                 <Label Content="{Binding SelectedArchiveItemCount}"></Label>
