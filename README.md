@@ -7,6 +7,9 @@ Archive Viewer is a program to view and edit .archive files, which Unreal Engine
 
 [archive_viewer_1]: https://github.com/Unavi/ArchiveViewer/blob/master/Images/ArchiveViewer_1.png
 
+##### Why this program exists?
+I am not really a fan of ex- and importing the translation content of UE4 into .po files, especially since they don't contain the namespaces set in UE4. To make it more convenient I wrote a program to directly view and edit the .archive files.
+
 #### Steps to get started
 
 * Select the Game.manifest Unreal generates for you and bookmark it for later under a name of your choosing.
@@ -30,3 +33,6 @@ Archive Viewer 1.0
 [Portable (Google Drive)](https://drive.google.com/open?id=1CCg-2jrJvho9M6GMX1NBjpnac_qerdRe)
 
 \*You might need to install .NET Framework 4.6.1, if you don't have it or a later version already.
+
+#### License
+MIT License (See [LICENSE.md](https://github.com/Unavi/ArchiveViewer/blob/master/LICENSE.md))
